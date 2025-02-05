@@ -1,26 +1,28 @@
 {
-  "name": "FYP-Backend",
+  "name": "fyp-backend",
   "version": "1.0.0",
-  "description": "This is the backend repository ",
-  "main": "app.js",
-  "type": "module",
-  "author": "Sadd Namee,Usman Ghani,Akash Javeed",
-  "license": "MIT",
+  "main": "index.js",
   "scripts": {
-    "start": "nodemon  ./src/app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
   "dependencies": {
-    "bcrypt": "^5.1.1",
-    "body-parser": "^1.20.3",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "joi": "^17.13.3",
-    "mongoose": "^8.9.2",
-    "yup": "^1.6.1"
+    "mongoose": "^8.9.7"
   },
   "devDependencies": {
-    "nodemon": "^3.1.9"
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.1",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
   }
 }
