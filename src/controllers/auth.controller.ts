@@ -96,7 +96,7 @@ export const accountActication = async( req:Request , res:Response):Promise<void
       return
     }
 
-    const code_verification = await Code.findOne({user : user._id, value : code, type :'account_activation'})
+    const code_verification = await Code.findOne({user:user, value:code,type:'account_activation'})
     if (!code_verification) {
       res.status(400).json({ success: false, detail: "Invalid code." });
       return;
