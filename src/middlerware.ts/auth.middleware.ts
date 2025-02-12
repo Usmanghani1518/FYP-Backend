@@ -10,7 +10,7 @@ declare module "express-serve-static-core" {
 }
 const JWT_SECRET = process.env.JWT_SECRET || "your_secret_key";
 
-// ✅ Auth Middleware (Checks if User is Logged In)
+
 export const protect = async (req: Request, res: Response, next: NextFunction) => {
   let token = req.cookies.jwt || req.headers.authorization?.split(" ")[1];
 

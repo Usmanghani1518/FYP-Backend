@@ -77,7 +77,7 @@ try {
         const resUser = await User.findOne(user_exists._id).select("-password");
         const userId: string = user_exists._id.toString();
         generateToken(userId, res)
-        res.status(201).json({success:true, detail: "Logged in successfully." ,resUser})
+        res.status(201).json({success:true, detail: "Logged in successfully." ,resUser,verified: true, })
         return;
 } catch(error) {
     console.error("Signup Error:", error);
