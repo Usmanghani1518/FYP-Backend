@@ -2,6 +2,8 @@ import {Request, Response} from "express"
 import bcrypt from "bcrypt"
 import { User} from "../models/user.model";
 import { generateToken } from "../helpers/token";   
+import { generateVerificationOTP } from "../helpers/generateOtp";
+import { Code } from "../models/code.model";
 export const signup = async (req:Request, res:Response):Promise<void>=>{
     
     try {
@@ -38,15 +40,9 @@ export const signup = async (req:Request, res:Response):Promise<void>=>{
         role,
     }   )
     await newUser.save()
-    const resUser = await User.findById(newUser._id).select("-password");
-    if (!resUser) {
-      res.status(400).json({ error: "Unable to create user" });
-      return;
-    }
-    const userId: string = newUser._id.toString();
-    generateToken(userId,res)
-
-    res.status(201).json({success:true, detail: "Account created successfully.",resUser})
+    
+    await generateVerificationOTP("account_activation",newUser)
+    res.status(201).json({success:true, detail: "Signed Up Successfully. Please check your email to verify your account."})
     return;
     } catch (error) {
         console.error("Signup Error:", error);
@@ -68,6 +64,11 @@ try {
     res.status(500).json({ success: false, detail: "Invalid Creditenials" });
     return
     }
+    if(!user_exists.emailConfirmed){
+      await generateVerificationOTP("account_activation", user_exists)
+      res.status(500).json({ success: true, verified: false, detail: "Account is not verified. A new verification email has been sent." });
+      return
+    }
     const hashedPassword = await bcrypt.compare(password , user_exists.password)
     if (!hashedPassword){
         res.status(500).json({ success: false, detail: "Invalid Creditenials" });
@@ -84,5 +85,46 @@ try {
     return;
 }
 }
+
+
+export const accountActication = async( req:Request , res:Response):Promise<void>=>{
+   try {
+    const {email , code} = req.body
+    const user =await User.findOne({email})
+    if (!user){
+      res.status(500).json({ success: false, detail: "Invalid email" });
+      return
+    }
+
+    const code_verification = await Code.findOne({user : user._id, value : code, type :'account_activation'})
+    if (!code_verification) {
+      res.status(400).json({ success: false, detail: "Invalid or expired code" });
+      return;
+    }
+    console.log("code_verification.expires_at",code_verification.expires_at)
+    console.log("new Date(Date.now())",new Date(Date.now()))
+    console.log(code_verification.expires_at && new Date(Date.now()) > code_verification.expires_at);
+    
+
+    if (code_verification.expires_at && new Date(Date.now()) > code_verification.expires_at) {
+      await code_verification.deleteOne(); 
+      res.status(400).json({ success: false, detail: "Code has expired. Request a new one." });
+      return;
+    }
+    await code_verification.deleteOne()
+
+    user.emailConfirmed = true
+    await user.save()
+
+    const userId :string = user._id.toString()
+    generateToken(userId , res)
+    res.status(201).json({ success: false, detail: "Account Is Activated. LoggedIn Successfully." });
+   } catch (error) {
+    console.error("Error activating account:", error);
+    res.status(500).json({ success: false, detail: "Error while generating code" });
+    
+   }
+}
+
 
  

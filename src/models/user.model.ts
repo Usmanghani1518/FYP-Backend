@@ -13,6 +13,7 @@ export interface IUser extends Document{
     password:string,
     role:UserRole,
     profilePicture:string,
+    emailConfirmed:boolean,
     createdCourses?: mongoose.Types.ObjectId[],
     enrolledCourses?: mongoose.Types.ObjectId[]
 }
@@ -41,6 +42,10 @@ const userSchema = new Schema<IUser>(
           type: String,
           enum: Object.values(UserRole),
           default: UserRole.STUDENT, 
+        },
+        emailConfirmed:{
+          type: Boolean,
+          default: false, 
         },
         profilePicture: {
           type: String,

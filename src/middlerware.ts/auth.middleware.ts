@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { decodeToken } from "./token";
+import { decodeToken } from "../helpers/token";
 import { IUser, User } from "../models/user.model";
 
 declare module "express-serve-static-core" {
