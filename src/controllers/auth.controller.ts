@@ -98,13 +98,9 @@ export const accountActication = async( req:Request , res:Response):Promise<void
 
     const code_verification = await Code.findOne({user : user._id, value : code, type :'account_activation'})
     if (!code_verification) {
-      res.status(400).json({ success: false, detail: "Invalid or expired code" });
+      res.status(400).json({ success: false, detail: "Invalid code." });
       return;
     }
-    console.log("code_verification.expires_at",code_verification.expires_at)
-    console.log("new Date(Date.now())",new Date(Date.now()))
-    console.log(code_verification.expires_at && new Date(Date.now()) > code_verification.expires_at);
-    
 
     if (code_verification.expires_at && new Date(Date.now()) > code_verification.expires_at) {
       await code_verification.deleteOne(); 
