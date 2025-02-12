@@ -1,11 +1,20 @@
-import mongoose , {Document , Schema} from "mongoose"
+import mongoose , {Document , Schema, Types} from "mongoose"
 
-interface IUser extends Document{
+
+export enum UserRole{
+  STUDENT = "student",
+  TEACHER ="teacher",
+  ADMIN = "admin"
+}
+export interface IUser extends Document{
+    _id: Types.ObjectId;
     name:string,
     email:string,
     password:string,
-    role:string,
+    role:UserRole,
     profilePicture:string,
+    createdCourses?: mongoose.Types.ObjectId[],
+    enrolledCourses?: mongoose.Types.ObjectId[]
 }
 
 
@@ -30,13 +39,19 @@ const userSchema = new Schema<IUser>(
         },
         role: {
           type: String,
-          enum: ['user', 'admin' , 'teacher'],
-          default: 'user', 
+          enum: Object.values(UserRole),
+          default: UserRole.STUDENT, 
         },
         profilePicture: {
           type: String,
           default: '',
         },
+        createdCourses:[
+          {type:mongoose.Schema.Types.ObjectId  ,ref :"Course"}
+        ],
+        enrolledCourses:[
+          {type:mongoose.Schema.Types.ObjectId , ref : "Course"}
+        ]
       },
       {
         timestamps: true, 

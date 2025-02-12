@@ -19,7 +19,7 @@ pids
 # node-waf configuration
 .lock-wscript
 
-# Compiled binary addons (https://nodejs.org/api/addons.html)
+# Compiled binary addons (https://nodejs.org/api/addons.html)1
 build/Release
 
 # Dependency directories
