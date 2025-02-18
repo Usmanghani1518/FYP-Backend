@@ -8,7 +8,7 @@ export interface ICourse extends Document {
   level: "beginner" | "intermediate" | "advanced";
   category: string;
   thumbnail: string;
-  videos: mongoose.Schema.Types.ObjectId[];
+  videos?: mongoose.Schema.Types.ObjectId[];
   studentsEnrolled: mongoose.Types.ObjectId[]; 
 }
 

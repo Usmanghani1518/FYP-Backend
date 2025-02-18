@@ -14,8 +14,6 @@ export interface IUser extends Document{
     role:UserRole,
     profilePicture:string,
     emailConfirmed:boolean,
-    createdCourses?: mongoose.Types.ObjectId[],
-    enrolledCourses?: mongoose.Types.ObjectId[]
 }
 
 
@@ -51,12 +49,6 @@ const userSchema = new Schema<IUser>(
           type: String,
           default: '',
         },
-        createdCourses:[
-          {type:mongoose.Schema.Types.ObjectId  ,ref :"Course"}
-        ],
-        enrolledCourses:[
-          {type:mongoose.Schema.Types.ObjectId , ref : "Course"}
-        ]
       },
       {
         timestamps: true, 

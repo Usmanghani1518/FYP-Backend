@@ -4,8 +4,9 @@ import { User} from "../models/user.model";
 import { generateToken } from "../helpers/token";   
 import { generateVerificationOTP } from "../helpers/generateOtp";
 import { Code } from "../models/code.model";
+
 export const signup = async (req:Request, res:Response):Promise<void>=>{
-    
+
     try {
     let {email, name, password, role,} = req.body;
     console.log("Received Body:", req.body);
@@ -114,7 +115,7 @@ export const accountActication = async( req:Request , res:Response):Promise<void
 
     const userId :string = user._id.toString()
     generateToken(userId , res)
-    res.status(201).json({ success: false, detail: "Account Is Activated. LoggedIn Successfully." });
+    res.status(201).json({ success: true, detail: "Account Is Activated. LoggedIn Successfully." });
    } catch (error) {
     console.error("Error activating account:", error);
     res.status(500).json({ success: false, detail: "Error while generating code" });

@@ -1,55 +1,61 @@
-import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
+import {  Response, NextFunction } from "express";
 import { decodeToken } from "../helpers/token";
-import { IUser, User } from "../models/user.model";
-
-declare module "express-serve-static-core" {
-  interface Request {
-    user?: IUser; 
-  }
-}
-const JWT_SECRET = process.env.JWT_SECRET || "your_secret_key";
+import {  User } from "../models/user.model";
+import { AuthRequest } from "../types/AuthRequest";
 
 
-export const protect = async (req: Request, res: Response, next: NextFunction) => {
-  let token = req.cookies.jwt || req.headers.authorization?.split(" ")[1];
+export const protect = async (req: AuthRequest, res: Response, next: NextFunction):Promise<void> => {
+  let token = req.cookies?.jwt || req.headers.authorization?.split(" ")[1];
 
   if (!token) {
-    return res.status(401).json({ error: "Unauthorized: No token provided" });
+    res.status(401).json({ error: "Unauthorized: No token provided" });
+    return
   }
 
   try {
     const decoded = decodeToken(token) as { id: string; role: string };
 
-    req.user = await User.findById(decoded.id).select("-password");
-
-    if (!req.user) {
-      return res.status(401).json({ error: "Unauthorized: User not found" });
+    const user = await User.findById(decoded.id).select("-password");
+    if (!user) {
+      res.status(401).json({ error: "Unauthorized: User not found" });
+      return
     }
 
-    next();
+    req.user = user; 
+    next(); 
   } catch (error) {
-    return res.status(401).json({ error: "Invalid or expired token" });
+   res.status(401).json({ error: "Invalid or expired token" });
+   return 
   }
 };
 
+
+
+
 export const authorize = (requiredRole: string) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return async (req: AuthRequest, res: Response, next: NextFunction):Promise<void> => {
+    console.log("90-0---------------0-")
+   
     if (!req.user) {
-      return res.status(403).json({ error: "Access denied: Not authenticated" });
+       res.status(403).json({ error: "Access denied: Not authenticated" });
+       return 
     }
+
     try {
       const user = await User.findById(req.user._id).select("role");
       if (!user) {
-        return res.status(403).json({ error: "Access denied: User not found" });
+         res.status(403).json({ error: "Access denied: User not found" });
+         return
       }
       if (user.role !== requiredRole) {
-        return res.status(403).json({ error: `Access denied: Requires ${requiredRole} role` });
+         res.status(403).json({ error: `Access denied: Requires ${requiredRole} role` });
+         return
       }
       next();
 
     } catch (error) {
-      return res.status(500).json({ error: "Server error: Unable to verify role" });
+       res.status(500).json({ error: "Server error: Unable to verify role" });
+       return
     }
 
 
