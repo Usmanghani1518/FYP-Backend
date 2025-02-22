@@ -1,16 +1,17 @@
 import {Request, Response} from "express"
 import bcrypt from "bcrypt"
-import { User} from "../models/user.model";
-import { generateToken } from "../helpers/token";   
-import { generateVerificationOTP } from "../helpers/generateOtp";
-import { Code } from "../models/code.model";
+import { User} from "../../models/user.model";
+import { generateToken } from "../../helpers/token";   
+import { generateVerificationOTP } from "../../helpers/generateOtp";
+import { Code } from "../../models/code.model";
+
 
 export const signup = async (req:Request, res:Response):Promise<void>=>{
 
     try {
-    let {email, name, password, role,} = req.body;
+    let {email, name, password} = req.body;
     console.log("Received Body:", req.body);
-    if (!email || !name || !password || !role ) {
+    if (!email || !name || !password) {
         res.status(400).json({ success: false, detail: "All fields are required" });
         return
 
@@ -38,7 +39,7 @@ export const signup = async (req:Request, res:Response):Promise<void>=>{
         email,
         name, 
         password:hashedPassword,
-        role,
+        role: 'student',
     }   )
     await newUser.save()
     
@@ -125,3 +126,8 @@ export const accountActication = async( req:Request , res:Response):Promise<void
 
 
  
+// Teacher
+
+
+
+  

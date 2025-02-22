@@ -5,7 +5,7 @@ import { upload } from "../config/cloudinaryConfig";
 
 const router = express.Router()
 router.post("/create", protect , upload.single("thumbnail"), authorize('teacher') , createCourse )
-router.get("/teacher/:teacherId", protect , authorize('teacher') , getTeacherCourses )
+router.get("/courses/:teacherId", protect , authorize('teacher') , getTeacherCourses )
 
 
 export default router;

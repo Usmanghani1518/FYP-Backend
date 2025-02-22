@@ -12,7 +12,7 @@ export interface IUser extends Document{
     email:string,
     password:string,
     role:UserRole,
-    profilePicture:string,
+    profilePicture?:string,
     emailConfirmed:boolean,
 }
 

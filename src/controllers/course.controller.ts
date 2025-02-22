@@ -8,9 +8,9 @@ import { AuthRequest } from "../types/AuthRequest";
 
 export const createCourse = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { title, description, price, category, level } = req.body;
+    const { title, description, price, category, level,language } = req.body;
 
-    if (!title || !description || !price || !category || !level) {
+    if (!title || !description || !price || !category || !level ||!language) {
       res.status(400).json({ success: false, detail: "All fields are required" });
       return;
     }
@@ -33,6 +33,7 @@ export const createCourse = async (req: AuthRequest, res: Response): Promise<voi
       category,
       level,
       thumbnail: result?.secure_url,
+      language
     });
 
     res.status(201).json({
@@ -51,7 +52,7 @@ export const createCourse = async (req: AuthRequest, res: Response): Promise<voi
 
   export const getTeacherCourses = async (req: AuthRequest , res:Response):Promise<void> => {
     try {
-      const {teacherId} = req.params;
+      const teacherId = req.user?._id;
       if (!teacherId) {
          res.status(400).json({ success: false, detail: "Teacher ID is required." });
          return

@@ -5,11 +5,12 @@ export interface ICourse extends Document {
   description: string;
   teacher: mongoose.Types.ObjectId; 
   price: number;
+  language: string;
   level: "beginner" | "intermediate" | "advanced";
   category: string;
   thumbnail: string;
   videos?: mongoose.Schema.Types.ObjectId[];
-  studentsEnrolled: mongoose.Types.ObjectId[]; 
+  studentsEnrolled?: mongoose.Types.ObjectId[]; 
 }
 
 const CourseSchema: Schema = new Schema(
@@ -19,6 +20,7 @@ const CourseSchema: Schema = new Schema(
     teacher: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     level: { type: String, enum: ["beginner", "intermediate", "advanced"], required: true },
     thumbnail: { type: String, required: true },
+    language: { type: String, required: true },
     price: { type: Number, default: 0 },
     category: { type: String, required: true },
     videos: [{ type: Schema.Types.ObjectId, ref: "Video" }],
