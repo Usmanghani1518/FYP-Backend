@@ -1,9 +1,10 @@
 import {Request, Response} from "express"
 import bcrypt from "bcrypt"
-import { User} from "../../models/user.model";
-import { generateToken } from "../../helpers/token";   
-import { generateVerificationOTP } from "../../helpers/generateOtp";
-import { Code } from "../../models/code.model";
+import { User} from "../models/user.model";
+import { generateToken } from "../helpers/token";   
+import { generateVerificationOTP } from "../helpers/generateOtp";
+import { Code } from "../models/code.model";
+import { Teacher } from "../models/teacher.model";
 
 
 export const signup = async (req:Request, res:Response):Promise<void>=>{
@@ -126,8 +127,78 @@ export const accountActication = async( req:Request , res:Response):Promise<void
 
 
  
-// Teacher
 
 
+export const deleteAllUser = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const result = await User.deleteMany(); 
 
+    res.status(200).json({
+      success: true,
+      message: "All users deleted successfully",
+      deletedCount: result.deletedCount, 
+    });
+  } catch (error) {
+    console.error("Error deleting users:", error);
+    res.status(500).json({
+      success: false,
+      detail: "Error while deleting users",
+    });
+  }
+};
+
+export const teacherSignup = async (req:Request, res:Response):Promise<void>=>{
+
+  try {
+  let {email, name, password, headline , experience} = req.body;
+
+  if (!email || !name || !password || !headline || !experience) {
+      res.status(400).json({ success: false, detail: "All fields are required" });
+      return
+    }
+
+  const existing_user = await User.findOne({email});
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   
+  if (!emailRegex.test(email.trim())) {  
+    res.status(400).json({ success: false, detail: "Invalid email format" });
+    return;
+  }
+  
+  if(existing_user){
+  res.status(400).json({success:false, detail: "User already exists"});
+  return;
+  }
+
+  if (password.length < 8){
+  res.status(400).json({success:false, detail: "Password length must be 8 characters."})
+  return;
+  }
+  const salt  = await bcrypt.genSalt(10)
+  const hashedPassword = await bcrypt.hash(password, salt)
+  const newUser = new User({
+      email,
+      name, 
+      password:hashedPassword,
+      role : 'teacher',
+  })
+  const newTeacher = new Teacher({
+    user: newUser._id,
+    headline,
+    experience
+  })
+  await newUser.save()
+  await newTeacher.save()
+
+  await generateVerificationOTP("account_activation",newUser)
+  res.status(201).json({success:true, detail: "Signed Up Successfully. Please check your email to verify your account."})
+  return;
+  } catch (error) {
+      console.error("Signup Error:", error);
+  res.status(500).json({ success: false, detail: "Internal Server Error" });
+  return;
+  }
+};
+
+
+
