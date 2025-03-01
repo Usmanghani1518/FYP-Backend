@@ -4,7 +4,7 @@ import mongoose, { Schema, Document } from "mongoose";
 interface StudentEnrolled {
   student?: mongoose.Types.ObjectId[]; 
   enrolledAt: Date
-
+  amountPaid: number
 }
 export interface ICourse extends Document {
   title: string;
@@ -29,13 +29,14 @@ const CourseSchema: Schema = new Schema(
     thumbnail: { type: String, required: true },
     language: { type: String, required: true },
     price: { type: Number, default: 0 },
-    rating: {type:Number, default:[]},
+    rating: [{type:Number}],
     category: { type: String, required: true },
     videos: [{ type: Schema.Types.ObjectId, ref: "Video" }],
     studentsEnrolled: [
       {
         student : { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-        entrolledAt :{ type: Date, default: Date.now }
+        entrolledAt :{ type: Date, default: Date.now },
+        amountPaid: { type: Number, required: true },
       }
     ]
     

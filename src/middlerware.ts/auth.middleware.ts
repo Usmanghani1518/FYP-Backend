@@ -35,9 +35,6 @@ export const protect = async (req: AuthRequest, res: Response, next: NextFunctio
 
 export const authorize = (requiredRole: string) => {
   return async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
-
-  
-
     try {
       if (!req.user) {
         res.status(403).json({ error: "Access denied: Not authenticated" });

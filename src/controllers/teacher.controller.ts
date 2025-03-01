@@ -86,55 +86,49 @@ export const teacherProfileUpdate = async (
 
 
 
-export const teacherStatics = async(req: AuthRequest ,  res : Response):Promise<void> => {
+export const teacherStatics = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-      const courses = await Course.find({teacher_id: req.user?._id} , "studentsEnrolled price")
-      if (courses.length === 0) {
-         res.json({ success: true, data: { courseCount: 0, totalStudentEnrolled: 0, totalEarning: 0 } });
-         return
-      }
-      
-      const courseCount = courses.length;
-      const totalStudentEnrolled = courses.reduce((sum, course)=> sum + (course.studentsEnrolled?.length || 0) , 0)
-      const totalEarning = courses.reduce((sum ,course) => sum + course.price, 0)
+    const courses = await Course.find({ teacher: req.user?._id }, "studentsEnrolled");
+
+    if (courses.length === 0) {
       res.json({
-        success : true,
-        data : {
-          courseCount,
-          totalStudentEnrolled,
-          totalEarning
-        }
-      })
+        success: true,
+        data: { courseCount: 0, totalStudentEnrolled: 0, totalEarning: 0 },
+      });
+      return;
+    }
+
+    const courseCount = courses.length;
+
+    const totalStudentEnrolled = courses.reduce(
+      (sum, course) => sum + (course.studentsEnrolled?.length || 0),
+      0
+    );
+
+    const totalEarning = courses.reduce((sum, course) => {
+      return (
+        sum +
+        (course.studentsEnrolled?.reduce(
+          (studentSum, enrollment) => studentSum + (enrollment.amountPaid || 0),
+          0
+        ) || 0)
+      );
+    }, 0);
+
+    res.json({
+      success: true,
+      data: {
+        courseCount,
+        totalStudentEnrolled,
+        totalEarning,
+        courses,
+      },
+    });
   } catch (error) {
-    console.error("Updated Error:", error);
+    console.error("Error fetching teacher statistics:", error);
     res.status(500).json({ success: false, detail: "Internal Server Error" });
-    return;
   }
-}
+};
 
 
-export const studentsandEarning = async(req: AuthRequest ,  res : Response):Promise<void> => {
-  try {
-      const courses = await Course.find({teacher_id: req.user?._id} , "studentsEnrolled price")
-      if (courses.length === 0) {
-         res.json({ success: true, data: { courseCount: 0, totalStudentEnrolled: 0, totalEarning: 0 } });
-         return
-      }
-      
-      const courseCount = courses.length;
-      const totalStudentEnrolled = courses.reduce((sum, course)=> sum + (course.studentsEnrolled?.length || 0) , 0)
-      const totalEarning = courses.reduce((sum ,course) => sum + course.price, 0)
-      res.json({
-        success : true,
-        data : {
-          courseCount,
-          totalStudentEnrolled,
-          totalEarning
-        }
-      })
-  } catch (error) {
-    console.error("Updated Error:", error);
-    res.status(500).json({ success: false, detail: "Internal Server Error" });
-    return;
-  }
-}
+
