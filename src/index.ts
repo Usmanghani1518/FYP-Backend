@@ -23,7 +23,7 @@ app.use(cors())
 app.use(express.json());  
 app.use(express.urlencoded({ extended: true }));
 app.use("/api/v1/auth", authRoutes)
-app.use("/api/v1/1", courseRoutes)
+app.use("/api/v1/course", courseRoutes)
 app.use("/api/v1/teacher", teacherRoutes)
 
 

@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import { User } from "../models/user.model";
 import { AuthRequest } from "../types/AuthRequest";
 import { cloudinary } from "../config/cloudinaryConfig";
+import { Course } from "../models/course.model";
 
 export const teacherProfileUpdate = async (
   req: AuthRequest,
@@ -82,3 +83,30 @@ export const teacherProfileUpdate = async (
     return;
   }
 };
+
+
+
+export const teacherStatics = async(req: AuthRequest ,  res : Response):Promise<void> => {
+  try {
+      const courses = await Course.find({teacher_id: req.user?._id} , "studentsEnrolled price")
+      if (courses.length === 0) {
+         res.json({ success: true, data: { courserCount: 0, totalStudentEnrolled: 0, totalEarning: 0 } });
+      }
+      
+      const courseCount = courses.length;
+      const totalStudentEnrolled = courses.reduce((sum, course)=> sum + (course.studentsEnrolled?.length || 0) , 0)
+      const totalEarning = courses.reduce((sum ,course) => sum + course.price, 0)
+      res.json({
+        success : true,
+        data : {
+          courseCount,
+          totalStudentEnrolled,
+          totalEarning
+        }
+      })
+  } catch (error) {
+    console.error("Updated Error:", error);
+    res.status(500).json({ success: false, detail: "Internal Server Error" });
+    return;
+  }
+}

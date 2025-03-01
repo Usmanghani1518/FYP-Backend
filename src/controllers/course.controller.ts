@@ -70,4 +70,23 @@ export const createCourse = async (req: AuthRequest, res: Response): Promise<voi
     
     }
   }
+
+  export const deleteCourse = async(req:AuthRequest , res: Response):Promise<void> => {
+  try {
+    const {courseId} = req.params
+    const course = await Course.findById(courseId)
+    if (!course){   
+       res.status(404).json({success: true, detail : "Course not found"})
+   return
+    }
+    await course.deleteOne()
+    res.status(200).json({success: true, detail : "Course deleted successfully"})
+    
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, detail: "Internal Server Error" });
+    
+  }
+  }
+  
   

@@ -9,6 +9,7 @@ export interface ICourse extends Document {
   level: "beginner" | "intermediate" | "advanced";
   category: string;
   thumbnail: string;
+  rating?: number[],
   videos?: mongoose.Schema.Types.ObjectId[];
   studentsEnrolled?: mongoose.Types.ObjectId[]; 
 }
@@ -22,6 +23,7 @@ const CourseSchema: Schema = new Schema(
     thumbnail: { type: String, required: true },
     language: { type: String, required: true },
     price: { type: Number, default: 0 },
+    rating: {type:Number, default:[]},
     category: { type: String, required: true },
     videos: [{ type: Schema.Types.ObjectId, ref: "Video" }],
     studentsEnrolled: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
