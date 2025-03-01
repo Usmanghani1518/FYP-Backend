@@ -1,15 +1,21 @@
-import {  Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import { decodeToken } from "../helpers/token";
-import {  User } from "../models/user.model";
+import { User } from "../models/user.model";
 import { AuthRequest } from "../types/AuthRequest";
 
 
-export const protect = async (req: AuthRequest, res: Response, next: NextFunction):Promise<void> => {
-  let token = req.cookies?.jwt || req.headers.authorization?.split(" ")[1];
-  
+export const protect = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+  console.log("req.cookies", req.headers.cookie?.split(" ")[1])
+  let token = req.cookies?.jwt || req.headers.authorization?.split(" ")[1] || req.headers.cookie?.split(" ")[1];
+  console.log("toke is this ", token.split("=")[1])
+
+
   if (!token) {
     res.status(401).json({ error: "Unauthorized: No token provided" });
     return
+  }
+  if (token) {
+    token = token.split("=")[1];
   }
 
   try {
@@ -21,12 +27,12 @@ export const protect = async (req: AuthRequest, res: Response, next: NextFunctio
       return
     }
 
-    req.user = user; 
+    req.user = user;
 
-    next(); 
+    next();
   } catch (error) {
-   res.status(401).json({ error: "Invalid or expired token" });
-   return 
+    res.status(401).json({ error: "Invalid or expired token" });
+    return
   }
 };
 
@@ -36,25 +42,25 @@ export const protect = async (req: AuthRequest, res: Response, next: NextFunctio
 export const authorize = (requiredRole: string) => {
   return async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
 
-  
+
 
     try {
       if (!req.user) {
         res.status(403).json({ error: "Access denied: Not authenticated" });
-        return; 
+        return;
       }
       const user = await User.findById(req.user._id).select("role");
-      
+
       if (!user) {
         res.status(403).json({ error: "Access denied: User not found" });
         return;
       }
-      
+
       if (user.role !== requiredRole) {
         res.status(403).json({ error: `Access denied: Requires ${requiredRole} role` });
         return;
       }
-      next();      
+      next();
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Server error: Unable to verify role" });
