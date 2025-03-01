@@ -90,7 +90,8 @@ export const teacherStatics = async(req: AuthRequest ,  res : Response):Promise<
   try {
       const courses = await Course.find({teacher_id: req.user?._id} , "studentsEnrolled price")
       if (courses.length === 0) {
-         res.json({ success: true, data: { courserCount: 0, totalStudentEnrolled: 0, totalEarning: 0 } });
+         res.json({ success: true, data: { courseCount: 0, totalStudentEnrolled: 0, totalEarning: 0 } });
+         return
       }
       
       const courseCount = courses.length;
