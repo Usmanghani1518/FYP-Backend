@@ -1,5 +1,11 @@
 import mongoose, { Schema, Document } from "mongoose";
 
+
+interface StudentEnrolled {
+  student?: mongoose.Types.ObjectId[]; 
+  enrolledAt: Date
+
+}
 export interface ICourse extends Document {
   title: string;
   description: string;
@@ -11,7 +17,7 @@ export interface ICourse extends Document {
   thumbnail: string;
   rating?: number[],
   videos?: mongoose.Schema.Types.ObjectId[];
-  studentsEnrolled?: mongoose.Types.ObjectId[]; 
+  studentsEnrolled?: StudentEnrolled[]; 
 }
 
 const CourseSchema: Schema = new Schema(
@@ -26,7 +32,13 @@ const CourseSchema: Schema = new Schema(
     rating: {type:Number, default:[]},
     category: { type: String, required: true },
     videos: [{ type: Schema.Types.ObjectId, ref: "Video" }],
-    studentsEnrolled: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    studentsEnrolled: [
+      {
+        student : { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        entrolledAt :{ type: Date, default: Date.now }
+      }
+    ]
+    
 
   },
   { timestamps: true }

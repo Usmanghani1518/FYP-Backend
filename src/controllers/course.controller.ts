@@ -2,11 +2,11 @@
 import {Response} from "express"
 import { cloudinary } from "../config/cloudinaryConfig";
 import { Course } from "../models/course.model";
-import { AuthRequest } from "../types/AuthRequest";
+import { AuthFileRequest, AuthRequest } from "../types/AuthRequest";
 
 
 
-export const createCourse = async (req: AuthRequest, res: Response): Promise<void> => {
+export const createCourse = async (req: AuthFileRequest, res: Response): Promise<void> => {
   try {
     const { title, description, price, category, level,language } = req.body;
 
@@ -88,5 +88,4 @@ export const createCourse = async (req: AuthRequest, res: Response): Promise<voi
     
   }
   }
-  
   
